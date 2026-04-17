@@ -2,18 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NoteCreatedMail;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class NoteController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Note::class, 'note');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $notes = Note::where("user_id", Auth::id())->get();
+        $notes = Auth::user()->can('manage notes')
+            ? Note::with('user')->latest()->get()
+            : Note::where('user_id', Auth::id())->latest()->get();
 
         return view('notes.index', compact('notes'));
     }
@@ -31,15 +40,16 @@ class NoteController extends Controller
      */
     public function store(Request $request)
     {
-        // Validation basique à compléter
-        // $validated = $request->validate([
-            
-        // ]);
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'min:3', 'max:255'],
+            'content' => ['required', 'string', 'min:5'],
+        ]);
 
         $note = new Note($validated);
         $note->user()->associate(Auth::user());
         $note->save();
 
+        Mail::to(Auth::user()->email)->send(new NoteCreatedMail($note));
 
         return redirect()
             ->route('notes.index')
@@ -67,10 +77,10 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
-        // Validation basique à compléter
-        // $validated = $request->validate([
-            
-        // ]);
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'min:3', 'max:255'],
+            'content' => ['required', 'string', 'min:5'],
+        ]);
 
         $note->update($validated);
 

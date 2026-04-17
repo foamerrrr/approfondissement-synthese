@@ -14,15 +14,15 @@
                         <!-- Title -->
                         <div>
                             <x-input-label for="title" :value="__('Titre')" />
-                            <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" :value="" required autofocus />
-                            <x-input-error :messages="" class="mt-2" />
+                            <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" value="" required autofocus />
+                            <x-input-error :messages="[]" class="mt-2" />
                         </div>
 
                         <!-- Content -->
                         <div class="mt-4">
                             <x-input-label for="content" :value="__('Contenu')" />
                             <textarea id="content" name="content" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="5" required></textarea>
-                            <x-input-error :messages="" class="mt-2" />
+                            <x-input-error :messages="[]" class="mt-2" />
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
